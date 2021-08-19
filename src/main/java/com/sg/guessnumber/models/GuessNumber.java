@@ -12,7 +12,6 @@ package com.sg.guessnumber.models;
 public class GuessNumber {
     private int id;
     private int answer;
-    private int guess;
     private boolean finished;
 
     public GuessNumber() {
@@ -38,14 +37,6 @@ public class GuessNumber {
         this.answer = answer;
     }
 
-    public int getGuess() {
-        return guess;
-    }
-
-    public void setGuess(int guess) {
-        this.guess = guess;
-    }
-
     public boolean isFinished() {
         return finished;
     }
@@ -53,4 +44,36 @@ public class GuessNumber {
     public void setFinished(boolean finished) {
         this.finished = finished;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 73 * hash + this.id;
+        hash = 73 * hash + this.answer;
+        hash = 73 * hash + (this.finished ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GuessNumber other = (GuessNumber) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.answer != other.answer) {
+            return false;
+        }
+        return this.finished == other.finished;
+    }
+    
+    
 }

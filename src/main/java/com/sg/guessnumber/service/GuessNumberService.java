@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sg.guessnumber.data;
+package com.sg.guessnumber.service;
 
 import com.sg.guessnumber.models.GuessNumber;
 import com.sg.guessnumber.models.Round;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Cosmos
  */
-public interface GuessNumberDao {
+public interface GuessNumberService {
     GuessNumber add(GuessNumber guessNumber);
 
     Round add(Round round);
