@@ -28,5 +28,7 @@ public interface GuessNumberDao {
     boolean update(GuessNumber guessNumber);
 
     // true if item exists and is deleted
-    boolean deleteById(int id);
+    boolean deleteGameById(int id);
+    
+    boolean deleteRoundsByGame(GuessNumber game);
 }

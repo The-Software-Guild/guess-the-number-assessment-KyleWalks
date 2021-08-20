@@ -21,6 +21,12 @@ public class GuessNumber {
         this.answer = answer;
     }
     
+    public GuessNumber(GuessNumber gn) {
+        this.id = gn.getId();
+        this.answer = gn.getAnswer();
+        this.finished = gn.isFinished();
+    }
+    
     public int getId() {
         return id;
     }
@@ -74,6 +80,4 @@ public class GuessNumber {
         }
         return this.finished == other.finished;
     }
-    
-    
 }

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import com.sg.guessnumber.models.Round;
 import com.sg.guessnumber.service.GuessNumberService;
 import com.sg.guessnumber.service.GuessNumberServiceLayer;
+import java.util.ArrayList;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,11 +27,6 @@ public class GuessNumberController {
 
     public GuessNumberController(GuessNumberServiceLayer service) {
         this.service = service;
-    }
-
-    @GetMapping
-    public List<GuessNumber> all() {
-        return service.getAllGames();
     }
     
     @PostMapping("/begin")
@@ -50,12 +46,24 @@ public class GuessNumberController {
     
     @GetMapping("/game")
     public ResponseEntity<GuessNumber> getAll() {
-        List<GuessNumber> result = service.getAllGames();
+        List<GuessNumber> games = service.getAllGames();
+        List<GuessNumber> result = new ArrayList<>();
         
-        if (result == null)
+        if (games == null || games.isEmpty())
             return new ResponseEntity(null, HttpStatus.NOT_FOUND);
         
-        return new ResponseEntity(service.getAllGames(), HttpStatus.OK);
+        games.stream().map(gn -> new GuessNumber(gn)).map(last -> {
+            if (!last.isFinished())
+                last.setAnswer(0);
+            return last;
+        }).forEachOrdered(last -> {
+            result.add(last);
+        });
+        
+        if (result.isEmpty())
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+                
+        return new ResponseEntity(result, HttpStatus.OK);
     }
     
     @GetMapping("/game/{id}")
@@ -64,7 +72,11 @@ public class GuessNumberController {
         if (result == null) {
             return new ResponseEntity(null, HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(result);
+        GuessNumber copy = new GuessNumber(result);
+        if (!copy.isFinished())
+            copy.setAnswer(0);
+        
+        return new ResponseEntity(copy, HttpStatus.FOUND);
     }
     
     @GetMapping("/rounds/{id}")

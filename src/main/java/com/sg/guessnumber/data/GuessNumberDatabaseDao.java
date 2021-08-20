@@ -22,7 +22,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Profile("database")
+@Profile({"database", "prod"})
 public class GuessNumberDatabaseDao implements GuessNumberDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -72,7 +72,7 @@ public class GuessNumberDatabaseDao implements GuessNumberDao {
             return statement;
 
         }, keyHolder);
-
+              
         round.setId(keyHolder.getKey().intValue());
 
         return round;
@@ -115,9 +115,16 @@ public class GuessNumberDatabaseDao implements GuessNumberDao {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteGameById(int id) {
+        deleteRoundsByGame(findById(id));
         final String sql = "DELETE FROM guessNumber WHERE id = ?;";
         return jdbcTemplate.update(sql, id) > 0;
+    }
+    
+    @Override
+    public boolean deleteRoundsByGame(GuessNumber gn) {
+        final String sql = "DELETE FROM round WHERE guessnumber_id = ?;";
+        return jdbcTemplate.update(sql, gn.getId()) > 0;
     }
 
     private static final class GuessNumberMapper implements RowMapper<GuessNumber> {

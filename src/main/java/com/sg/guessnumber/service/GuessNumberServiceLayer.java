@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
  * @author Cosmos
  */
 @Service
-@Profile("service")
+@Profile({"service", "prod"})
 public class GuessNumberServiceLayer implements GuessNumberService {
     
     private final GuessNumberDao dao;
@@ -64,15 +64,12 @@ public class GuessNumberServiceLayer implements GuessNumberService {
 
     @Override
     public Round add(Round round) {
-        // TODO: Parent game does not exist.
-        // Set foreign key linking round to game
         if (dao.getAllGames().size() < round.getGuessNumberId()) {
             return null;
         }
+        // Set foreign key linking round to game
         GuessNumber ans = findById(round.getGuessNumberId());
-        
-        round.setGuessNumberId(round.getGuessNumberId());
-        
+                
         String ansAsString = Integer.toString(ans.getAnswer());
         String guessAsString = Integer.toString(round.getGuess());
         
@@ -87,6 +84,7 @@ public class GuessNumberServiceLayer implements GuessNumberService {
                     partial += 1;
             }
         }
+        // Check if all correct
         if (correct == 4) {
             ans.setFinished(true);
             update(ans);
@@ -106,11 +104,7 @@ public class GuessNumberServiceLayer implements GuessNumberService {
         
         if (result.size() < 1)
             return null;
-        
-        for (GuessNumber gn : result)
-            if (!gn.isFinished())
-                gn.setAnswer(0);
-        
+                
         return result;
     }
 
@@ -119,7 +113,7 @@ public class GuessNumberServiceLayer implements GuessNumberService {
         
         List<GuessNumber> result = dao.getAllGames();
         
-        if (result.size() < id) {
+        if (result.size() < id || id == 0) {
             return null;
         }
         
@@ -129,21 +123,31 @@ public class GuessNumberServiceLayer implements GuessNumberService {
     @Override
     public GuessNumber findById(int id) {
         
-        if (dao.getAllGames().size() < id) {
+        if (dao.getAllGames().size() < id || id == 0) {
             return null;
         }
+        GuessNumber gn = dao.findById(id);
         
-        return dao.findById(id);
+        return gn;
     }
 
     @Override
     public boolean update(GuessNumber guessNumber) {
+        
+        if (guessNumber == null)
+            return false;
+        
         return dao.update(guessNumber);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return dao.deleteById(id);
+        List<GuessNumber> games = dao.getAllGames();
+        if (games.size() < id || id == 0) {
+            return false;
+        }
+        
+        return dao.deleteGameById(id);
     }
     
 }

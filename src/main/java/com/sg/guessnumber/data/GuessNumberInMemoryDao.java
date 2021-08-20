@@ -91,7 +91,19 @@ public class GuessNumberInMemoryDao implements GuessNumberDao{
     }
 
     @Override
-    public boolean deleteById(int id) {
-        return guessNumbers.removeIf(i -> i.getId() == id);
+    public boolean deleteGameById(int id) {
+        
+        for (GuessNumber gn : guessNumbers) {
+            if (gn.getId() == id) {
+                deleteRoundsByGame(gn);
+                return guessNumbers.remove(gn);
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean deleteRoundsByGame(GuessNumber game) {
+        return rounds.remove(game, game);
     }
 }
